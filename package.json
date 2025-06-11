@@ -1,0 +1,16 @@
+{
+  "name": "proyecto_9_web_scrapping",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^8.15.1",
+    "pupeteer": "^0.0.1"
+  }
+}
