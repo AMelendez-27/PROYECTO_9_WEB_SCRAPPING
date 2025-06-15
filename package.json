@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "mongoose": "^8.15.1",
-    "pupeteer": "^0.0.1"
+    "puppeteer": "^24.10.1"
   }
 }
