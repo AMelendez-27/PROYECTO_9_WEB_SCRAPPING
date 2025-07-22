@@ -21,6 +21,15 @@ const scrapeCards = async (keyword) => {
   const page = await browser.newPage();
   await page.goto(url);
 
+  // Patch
+  // Wait for the cookies accept btn popup to appear
+  try {
+    await page.waitForSelector('#cookiePrefPopup', { visible: true, timeout: 5000 });
+    await page.click('#acceptAllButton');
+  } catch (e) {
+    // If the popup doesn't appear, continue normally
+  }
+
   const productsArray = [];
   await repeat(page, productsArray);
 
@@ -56,7 +65,7 @@ const repeat = async (page, productsArray) => {
     productsArray.push(productData);
   }
 
-  // Comprobar si hay botón siguiente y si está deshabilitado
+  // Check if there is a "NEXT" button and if it's disabled
   const nextButton = await page.$('#searchResults_btn_next');
   if (nextButton) {
     const isDisabled = await page.$eval('#searchResults_btn_next', btn =>
@@ -65,9 +74,11 @@ const repeat = async (page, productsArray) => {
 
     if (!isDisabled) {
       await Promise.all([
-        nextButton.click()
+        nextButton.click(),
+        page.waitForNavigation({ waitUntil: 'networkidle0' })
       ]);
-      await repeat(page, productsArray); // llamada recursiva SOLO si hay más páginas
+      await page.waitForSelector('#searchResultsRows a', { visible: true });
+      await repeat(page, productsArray);
     }
   }
 };
