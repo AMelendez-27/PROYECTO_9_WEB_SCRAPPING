@@ -73,10 +73,25 @@ const repeat = async (page, productsArray) => {
     );
 
     if (!isDisabled) {
-      await Promise.all([
-        nextButton.click(),
-        page.waitForNavigation({ waitUntil: 'networkidle0' })
-      ]);
+      // Guarda el nombre del primer producto antes de cambiar de página
+      const firstProductName = await page.$eval(
+        '#searchResultsRows a span.market_listing_item_name',
+        el => el.innerText
+      );
+
+      await nextButton.click();
+
+      // Espera a que el nombre del primer producto cambie (nueva página)
+      await page.waitForFunction(
+        (selector, oldName) => {
+          const el = document.querySelector(selector);
+          return el && el.innerText !== oldName;
+        },
+        {},
+        '#searchResultsRows a span.market_listing_item_name',
+        firstProductName
+      );
+
       await page.waitForSelector('#searchResultsRows a', { visible: true });
       await repeat(page, productsArray);
     }
@@ -84,3 +99,7 @@ const repeat = async (page, productsArray) => {
 };
 
 scrapeCards('butterfly');
+
+// Fetch of total number of products from the JSON file
+const products = require('./products.json');
+console.log('Total products:', products.length);
